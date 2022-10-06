@@ -8,14 +8,54 @@ import {
     FetchErrors,
     getUrlBase,
     sanitizeModules,
+    LightLibraryQueryString,
 } from '@youwol/cdn-client'
 import { loadPyodide } from 'pyodide'
 
 export interface PythonInstall extends InstallInputs {
-    warmUp: boolean
+    /**
+     * List of modules to install, see [[LightLibraryQueryString]] for specification.
+     *
+     * A typical example (looking at the field 'installInputs'):
+     * ```
+     * import {install} from `@youwol/cdn-client`
+     *
+     * await install({
+     *     customInstallers:[
+     *         module:'@youwol/cdn-pyodide-loader,
+     *         installInputs:{
+     *             modules: ['numpy#^1.22.4']
+     *         }
+     *     ]
+     * })
+     * ```
+     */
+    modules: LightLibraryQueryString[]
+
+    /**
+     * If provided, export the instantiated pyodide interpreter in global `window` using this name
+     */
+    exportedPyodideInstanceName?: string
+
+    /**
+     * If true it will import the package in python at the end of the installation.
+     */
+    warmUp?: boolean
+
+    /**
+     * If provided, forward CdnEvent to this callback.
+     *
+     * @param cdnEvent cdn event
+     */
+    onEvent?: (cdnEvent) => void
 }
 
-export async function install(inputs: PythonInstall) {
+export async function install(
+    inputs: PythonInstall,
+    mockPyodide?: {
+        loadPyodide: () => Promise<{ loadPackage; runPython }>
+    },
+) {
     const cdnClient = new Client()
     const modules = sanitizeModules(inputs.modules || [])
     const onEvent =
@@ -73,10 +113,15 @@ export async function install(inputs: PythonInstall) {
     }
 
     onEvent(new CdnMessageEvent('loadPyodide', 'Loading Python environment...'))
-    window['loadedPyodide'] = await loadPyodide({
-        indexURL: getUrlBase('pyodide', '0.21.3') + '/full',
-    })
-    const pyodide = window['loadedPyodide']
+    const pyodide = mockPyodide
+        ? await mockPyodide.loadPyodide()
+        : await loadPyodide({
+              indexURL,
+          })
+
+    if (inputs.exportedPyodideInstanceName) {
+        window[inputs.exportedPyodideInstanceName] = pyodide
+    }
 
     onEvent(new CdnMessageEvent('loadPyodide', 'Python environment loaded'))
 
