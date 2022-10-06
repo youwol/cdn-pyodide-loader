@@ -10,7 +10,7 @@ if (!globalThis.fetch) {
 }
 
 import { installPackages$, MockPyodide } from './common'
-import { install } from '../index'
+import { install } from '../lib'
 import { install as cdnInstall } from '@youwol/cdn-client'
 
 // installing pyodide in the CDN takes a bit of time
@@ -31,5 +31,8 @@ test('install numpy', async () => {
     })
 
     expect(window['pyodide']).toBeTruthy()
-    await install({ modules: ['@pyodide/numpy#^1.22.4'] }, new MockPyodide())
+    await install(
+        { modules: ['@pyodide/numpy#^1.22.4'], warmUp: true },
+        new MockPyodide(),
+    )
 })

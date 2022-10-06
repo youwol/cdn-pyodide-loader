@@ -119,8 +119,8 @@ export async function install(
     const pyodide = mockPyodide
         ? await mockPyodide.loadPyodide()
         : await loadPyodide({
-              indexURL,
-          })
+            indexURL,
+        })
 
     if (inputs.exportedPyodideInstanceName) {
         window[inputs.exportedPyodideInstanceName] = pyodide
