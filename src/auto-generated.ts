@@ -47,7 +47,7 @@ export const setup = {
     name:'@youwol/cdn-pyodide-loader',
         assetId:'QHlvdXdvbC9jZG4tcHlvZGlkZS1sb2FkZXI=',
     version:'0.1.1-wip',
-    shortDescription:"",
+    shortDescription:"Packages loader for pyodide from YouWol's CDN",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/cdn-pyodide-loader',
     npmPackage:'https://www.npmjs.com/package/@youwol/cdn-pyodide-loader',
     sourceGithub:'https://github.com/youwol/cdn-pyodide-loader',

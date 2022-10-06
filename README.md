@@ -1,6 +1,6 @@
 # @youwol/cdn-pyodide-loader
 
-
+Packages loader for pyodide from YouWol's CDN
 
 This library is part of the hybrid cloud/local ecosystem
 [YouWol](https://platform.youwol.com/applications/@youwol/platform/latest).
