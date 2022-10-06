@@ -26,7 +26,9 @@ template = Template(
         ),
         devTime={
             "url": "^0.11.0",
-            "crypto-browserify": "^3.12.0"
+            "crypto-browserify": "^3.12.0",
+            "@youwol/http-clients": "^2.0.0",
+            "@youwol/http-primitives": "^0.1.1"
         }
     ),
     bundles=Bundles(
@@ -35,6 +37,7 @@ template = Template(
               loadDependencies=["pyodide"]
           )
         ),
+    testConfig="https://github.com/youwol/integration-tests-conf",
     userGuide=True
     )
 
