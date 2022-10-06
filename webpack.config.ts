@@ -9,6 +9,7 @@ const DESTINATION = path.resolve(__dirname, 'dist')
 
 const webpackConfig: webpack.Configuration = {
     resolve: {
+        extensions: ['.ts', 'tsx', '.js'],
         modules: [ROOT, 'node_modules'],
         fallback: {
             url: require.resolve('url/'),
