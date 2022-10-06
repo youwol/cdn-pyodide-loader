@@ -97,7 +97,6 @@ export async function install(inputs: PythonInstall) {
                     ? lib.exportedSymbol.split('pyodide/')[1]
                     : lib.exportedSymbol
 
-            console.log(`warmup ${lib.name} using 'import ${importName}'`)
             onEvent(
                 new CdnMessageEvent(
                     importName,
