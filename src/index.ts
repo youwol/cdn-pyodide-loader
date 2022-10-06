@@ -1,35 +1,18 @@
 import {
     Client,
-    ModuleInput,
     InstallInputs,
-    ModuleSideEffectCallback,
     State,
     CdnMessageEvent,
     CdnEvent,
     CdnLoadingGraphErrorEvent,
     FetchErrors,
     getUrlBase,
+    sanitizeModules,
 } from '@youwol/cdn-client'
 import { loadPyodide } from 'pyodide'
 
 export interface PythonInstall extends InstallInputs {
     warmUp: boolean
-}
-
-export function sanitizeModules(
-    modules: ModuleInput[],
-): { name: string; version: string; sideEffects?: ModuleSideEffectCallback }[] {
-    return modules.reduce((acc, e) => {
-        const elem =
-            typeof e == 'string'
-                ? {
-                      name: e.includes('#') ? e.split('#')[0] : e,
-                      version: e.includes('#') ? e.split('#')[1] : 'latest',
-                  }
-                : e
-
-        return [...acc, elem]
-    }, [])
 }
 
 export async function install(inputs: PythonInstall) {
@@ -54,7 +37,6 @@ export async function install(inputs: PythonInstall) {
         {},
     )
 
-    console.log('libraries', libraries)
     const errors = []
     const packagesSelected = loadingGraph.definition
         .flat()
