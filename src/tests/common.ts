@@ -32,7 +32,6 @@ export function installPackages$(packages: string[]) {
         pyYouwolPort: 2001,
     }).pipe(
         tap(() => {
-            console.log(RootRouter.HostName)
             Client.HostName = RootRouter.HostName
         }),
         mergeMap(() => {
