@@ -57,17 +57,20 @@ export async function install(
     },
 ) {
     const cdnClient = new Client()
+    const indexURL = getUrlBase('pyodide', '0.21.3') + '/full'
+    const nativePackages = {
+        '@pyodide/distutils': 'distutils',
+        '@pyodide/CLAPACK': 'CLAPACK',
+    }
     const modules = sanitizeModules(inputs.modules || [])
     const onEvent =
         inputs.onEvent ||
         (() => {
             /*no op*/
         })
-    const body = {
+    const loadingGraph = await cdnClient.queryLoadingGraph({
         modules: modules,
-    }
-
-    const loadingGraph = await cdnClient.queryLoadingGraph(body)
+    })
     const libraries = loadingGraph.lock.reduce(
         (acc, e) => ({ ...acc, ...{ [e.id]: e } }),
         {},
@@ -125,14 +128,12 @@ export async function install(
 
     onEvent(new CdnMessageEvent('loadPyodide', 'Python environment loaded'))
 
-    const packageInstallPromises = packagesSelected
-        .filter(({ name }) => name != '@pyodide/distutils')
-        .map(({ url }) => {
-            url = url.includes('CLAPACK') ? 'CLAPACK' : url
-            return pyodide.loadPackage(url, (message) =>
-                processInstallMessages(message, onEvent),
-            )
-        })
+    const packageInstallPromises = packagesSelected.map(({ name, url }) => {
+        url = nativePackages[name] ? nativePackages[name] : url
+        return pyodide.loadPackage(url, (message) =>
+            processInstallMessages(message, onEvent),
+        )
+    })
     await Promise.all(packageInstallPromises)
     if (inputs.warmUp) {
         modules.forEach(({ name }) => {
