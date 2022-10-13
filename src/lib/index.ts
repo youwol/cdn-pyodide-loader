@@ -9,6 +9,7 @@ import {
     getUrlBase,
     sanitizeModules,
     LightLibraryQueryString,
+    getAssetId,
 } from '@youwol/cdn-client'
 import { loadPyodide } from 'pyodide'
 
@@ -84,9 +85,14 @@ export async function install(
     const packagesSelected = loadingGraph.definition
         .flat()
         .map(([assetId, cdn_url]) => {
+            const isNative = Object.keys(nativePackages).find(
+                (name) => getAssetId(name) == assetId,
+            )
             return {
                 assetId,
-                url: `/api/assets-gateway/raw/package/${cdn_url}`,
+                url: isNative
+                    ? `${indexURL}/${cdn_url.split('/').slice(-1)[0]}`
+                    : `/api/assets-gateway/raw/package/${cdn_url}`,
                 name: libraries[assetId].name,
                 version: libraries[assetId].version,
                 exportedSymbol: libraries[assetId].exportedSymbol,
@@ -119,8 +125,8 @@ export async function install(
     const pyodide = mockPyodide
         ? await mockPyodide.loadPyodide()
         : await loadPyodide({
-            indexURL,
-        })
+              indexURL,
+          })
 
     if (inputs.exportedPyodideInstanceName) {
         window[inputs.exportedPyodideInstanceName] = pyodide
