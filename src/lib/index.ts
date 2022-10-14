@@ -162,14 +162,14 @@ export async function install(
 
             onEvent(
                 new CdnMessageEvent(
-                    importName,
+                    name,
                     `${name} (${importName}) warming up...`,
                 ),
             )
             pyodide.runPython(`import ${importName}`)
             onEvent(
                 new CdnMessageEvent(
-                    importName,
+                    name,
                     `${name} (${importName}) loaded & ready`,
                 ),
             )
@@ -187,9 +187,13 @@ export function processInstallMessages(
         !rawMessage.includes('/api/assets-gateway')
     ) {
         const packages = rawMessage.split('Loading ')[1].split(', ')
-
         packages.forEach((library) => {
-            onEvent(new CdnMessageEvent(library, `${library} queued`))
+            onEvent(
+                new CdnMessageEvent(
+                    `@pyodide/${library}`,
+                    `${library} installing ...`,
+                ),
+            )
         })
         return
     }
@@ -198,13 +202,17 @@ export function processInstallMessages(
         rawMessage.includes('/api/assets-gateway')
     ) {
         const library = rawMessage.split(' ')[1]
-        onEvent(new CdnMessageEvent(library, `${library} loading...`))
+        onEvent(
+            new CdnMessageEvent(`@pyodide/${library}`, `${library} loading...`),
+        )
         return
     }
     if (rawMessage.startsWith('Loaded')) {
         const packages = rawMessage.split('Loaded ')[1].split(', ')
         packages.forEach((library) => {
-            onEvent(new CdnMessageEvent(library, `${library} loaded`))
+            onEvent(
+                new CdnMessageEvent(`@pyodide/${library}`, `${library} loaded`),
+            )
         })
     }
 }
