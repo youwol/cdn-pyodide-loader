@@ -58,7 +58,16 @@ export async function install(
     },
 ) {
     const cdnClient = new Client()
-    const indexURL = getUrlBase('pyodide', '0.21.3') + '/full'
+    // There is some trouble when pyodide is loaded from an iFrame programmatically constructed (no origin available)
+    // We provide absolute URL to pyodide by finding the first parent of the current window having an origin defined.
+    const getOrigin = (currentWindow: Window) => {
+        return currentWindow.document.location.origin == 'null'
+            ? getOrigin(currentWindow.parent)
+            : currentWindow.document.location.origin
+    }
+
+    const origin = getOrigin(window)
+    const indexURL = `${origin}${getUrlBase('pyodide', '0.21.3')}/full`
     const nativePackages = {
         '@pyodide/distutils': 'distutils',
         '@pyodide/CLAPACK': 'CLAPACK',
@@ -91,7 +100,9 @@ export async function install(
             return {
                 assetId,
                 url: isNative
-                    ? `${indexURL}/${cdn_url.split('/').slice(-1)[0]}`
+                    ? `${getUrlBase('pyodide', '0.21.3')}/full/${
+                          cdn_url.split('/').slice(-1)[0]
+                      }`
                     : `/api/assets-gateway/raw/package/${cdn_url}`,
                 name: libraries[assetId].name,
                 version: libraries[assetId].version,
@@ -135,7 +146,7 @@ export async function install(
     onEvent(new CdnMessageEvent('loadPyodide', 'Python environment loaded'))
 
     const packageInstallPromises = packagesSelected.map(({ name, url }) => {
-        url = nativePackages[name] ? nativePackages[name] : url
+        url = nativePackages[name] ? nativePackages[name] : `${origin}${url}`
         return pyodide.loadPackage(url, (message) =>
             processInstallMessages(message, onEvent),
         )
