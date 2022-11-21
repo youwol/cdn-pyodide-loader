@@ -61,9 +61,9 @@ export async function install(
     // There is some trouble when pyodide is loaded from an iFrame programmatically constructed (no origin available)
     // We provide absolute URL to pyodide by finding the first parent of the current window having an origin defined.
     const getOrigin = (currentWindow: Window) => {
-        return currentWindow.document.location.origin == 'null'
+        return currentWindow.location.origin == 'null'
             ? getOrigin(currentWindow.parent)
-            : currentWindow.document.location.origin
+            : currentWindow.location.origin
     }
 
     const origin = getOrigin(window)
@@ -160,19 +160,9 @@ export async function install(
                     ? lib.exportedSymbol.split('pyodide/')[1]
                     : lib.exportedSymbol
 
-            onEvent(
-                new CdnMessageEvent(
-                    name,
-                    `${name} (${importName}) warming up...`,
-                ),
-            )
+            onEvent(new CdnMessageEvent(name, `${importName} warming up...`))
             pyodide.runPython(`import ${importName}`)
-            onEvent(
-                new CdnMessageEvent(
-                    name,
-                    `${name} (${importName}) loaded & ready`,
-                ),
-            )
+            onEvent(new CdnMessageEvent(name, `${importName} loaded & ready`))
         })
     }
     return { pyodide, loadingGraph }
