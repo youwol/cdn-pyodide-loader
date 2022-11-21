@@ -160,19 +160,9 @@ export async function install(
                     ? lib.exportedSymbol.split('pyodide/')[1]
                     : lib.exportedSymbol
 
-            onEvent(
-                new CdnMessageEvent(
-                    name,
-                    `${name} (${importName}) warming up...`,
-                ),
-            )
+            onEvent(new CdnMessageEvent(name, `${importName} warming up...`))
             pyodide.runPython(`import ${importName}`)
-            onEvent(
-                new CdnMessageEvent(
-                    name,
-                    `${name} (${importName}) loaded & ready`,
-                ),
-            )
+            onEvent(new CdnMessageEvent(name, `${importName} loaded & ready`))
         })
     }
     return { pyodide, loadingGraph }
