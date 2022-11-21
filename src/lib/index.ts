@@ -61,9 +61,9 @@ export async function install(
     // There is some trouble when pyodide is loaded from an iFrame programmatically constructed (no origin available)
     // We provide absolute URL to pyodide by finding the first parent of the current window having an origin defined.
     const getOrigin = (currentWindow: Window) => {
-        return currentWindow.document.location.origin == 'null'
+        return currentWindow.location.origin == 'null'
             ? getOrigin(currentWindow.parent)
-            : currentWindow.document.location.origin
+            : currentWindow.location.origin
     }
 
     const origin = getOrigin(window)
