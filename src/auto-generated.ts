@@ -46,7 +46,7 @@ const entries = {
 export const setup = {
     name:'@youwol/cdn-pyodide-loader',
         assetId:'QHlvdXdvbC9jZG4tcHlvZGlkZS1sb2FkZXI=',
-    version:'0.1.1',
+    version:'0.1.2-wip',
     shortDescription:"Packages loader for pyodide from YouWol's CDN.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/cdn-pyodide-loader',
     npmPackage:'https://www.npmjs.com/package/@youwol/cdn-pyodide-loader',
@@ -81,7 +81,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/cdn-pyodide-loader#0.1.1~dist/@youwol/cdn-pyodide-loader/${entry.name}.js`
+            `@youwol/cdn-pyodide-loader#0.1.2-wip~dist/@youwol/cdn-pyodide-loader/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
