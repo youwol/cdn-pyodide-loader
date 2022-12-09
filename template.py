@@ -21,14 +21,14 @@ template = Template(
         runTime=RunTimeDeps(
             externals={
                 "pyodide": "^0.21.3",
-                "@youwol/cdn-client": "^1.0.4"
+                "@youwol/cdn-client": "^1.0.9"
             }
         ),
         devTime={
             "url": "^0.11.0",
             "crypto-browserify": "^3.12.0",
             "@youwol/http-clients": "^2.0.0",
-            "@youwol/http-primitives": "^0.1.1"
+            "@youwol/http-primitives": "^0.1.2"
         }
     ),
     bundles=Bundles(
@@ -46,7 +46,7 @@ shutil.copyfile(
     src=folder_path / '.template' / 'src' / 'auto-generated.ts',
     dst=folder_path / 'src' / 'auto-generated.ts'
 )
-for file in ['README.md', '.gitignore', '.npmignore', '.prettierignore', 'LICENSE', 'package.json']:
+for file in ['README.md', '.gitignore', '.npmignore', '.prettierignore', 'LICENSE', 'package.json', 'jest.config.js']:
     shutil.copyfile(
         src=folder_path / '.template' / file,
         dst=folder_path / file

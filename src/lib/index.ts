@@ -8,31 +8,12 @@ import {
     FetchErrors,
     getUrlBase,
     sanitizeModules,
-    LightLibraryQueryString,
     getAssetId,
+    InstallLoadingGraphInputs,
 } from '@youwol/cdn-client'
 import { loadPyodide } from 'pyodide'
 
-export interface PythonInstall extends InstallInputs {
-    /**
-     * List of modules to install, see [[LightLibraryQueryString]] for specification.
-     *
-     * A typical example (looking at the field 'installInputs'):
-     * ```
-     * import {install} from `@youwol/cdn-client`
-     *
-     * await install({
-     *     customInstallers:[
-     *         module:'@youwol/cdn-pyodide-loader,
-     *         installInputs:{
-     *             modules: ['numpy#^1.22.4']
-     *         }
-     *     ]
-     * })
-     * ```
-     */
-    modules: LightLibraryQueryString[]
-
+export interface InstallOptions {
     /**
      * If provided, export the instantiated pyodide interpreter in global `window` using this name
      */
@@ -51,8 +32,17 @@ export interface PythonInstall extends InstallInputs {
     onEvent?: (cdnEvent) => void
 }
 
+type PythonLoadingGraph = InstallLoadingGraphInputs & InstallOptions
+type PythonInstall = InstallInputs & InstallOptions
+
+function isPythonInstallInputs(
+    body: PythonInstall | PythonLoadingGraph,
+): body is PythonInstall {
+    return (body as PythonInstall).modules !== undefined
+}
+
 export async function install(
-    inputs: PythonInstall,
+    inputs: PythonInstall | PythonLoadingGraph,
     mockPyodide?: {
         loadPyodide: () => Promise<{ loadPackage; runPython }>
     },
@@ -72,15 +62,24 @@ export async function install(
         '@pyodide/distutils': 'distutils',
         '@pyodide/CLAPACK': 'CLAPACK',
     }
-    const modules = sanitizeModules(inputs.modules || [])
     const onEvent =
         inputs.onEvent ||
         (() => {
             /*no op*/
         })
-    const loadingGraph = await cdnClient.queryLoadingGraph({
-        modules: modules,
-    })
+
+    const [modules, loadingGraph] = isPythonInstallInputs(inputs)
+        ? [
+              sanitizeModules(inputs.modules || []),
+              await cdnClient.queryLoadingGraph({
+                  modules: inputs.modules,
+              }),
+          ]
+        : [
+              inputs.loadingGraph.lock.map(({ name }) => ({ name })),
+              inputs.loadingGraph,
+          ]
+
     const libraries = loadingGraph.lock.reduce(
         (acc, e) => ({ ...acc, ...{ [e.id]: e } }),
         {},
