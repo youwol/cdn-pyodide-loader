@@ -7,6 +7,13 @@ import { readFileSync } from 'fs'
 import { Client } from '@youwol/cdn-client'
 import path from 'path'
 
+export function getPyYouwolBasePath() {
+    return 'http://localhost:2001'
+}
+
+RootRouter.HostName = getPyYouwolBasePath()
+RootRouter.Headers = { 'py-youwol-local-only': 'true' }
+
 export class MockPyodide {
     runs = []
     packages = []
@@ -28,7 +35,7 @@ export class MockPyodide {
 export function installPackages$(packages: string[]) {
     return LocalYouwol.setup$({
         localOnly: true,
-        email: 'int_tests_yw-users@test-user',
+        authId: 'int_tests_yw-users@test-user',
         pyYouwolPort: 2001,
     }).pipe(
         tap(() => {
