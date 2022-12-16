@@ -15,14 +15,13 @@ import { install as cdnInstall } from '@youwol/cdn-client'
 
 // installing pyodide in the CDN takes a bit of time
 jest.setTimeout(60 * 1000)
+
 beforeAll((done) => {
-    installPackages$([
-        '../../cdn.zip',
-        './data/pyodide.zip',
-        './data/numpy.zip',
-    ]).subscribe(() => {
-        done()
-    })
+    installPackages$(['./data/pyodide.zip', './data/numpy.zip']).subscribe(
+        () => {
+            done()
+        },
+    )
 })
 
 test('install numpy', async () => {
