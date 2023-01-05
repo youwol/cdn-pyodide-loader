@@ -46,7 +46,7 @@ shutil.copyfile(
     src=folder_path / '.template' / 'src' / 'auto-generated.ts',
     dst=folder_path / 'src' / 'auto-generated.ts'
 )
-for file in ['README.md', '.gitignore', '.npmignore', '.prettierignore', 'LICENSE', 'package.json', 'jest.config.js']:
+for file in ['README.md', '.gitignore', '.npmignore', '.prettierignore', 'LICENSE', 'package.json', 'jest.config.ts']:
     shutil.copyfile(
         src=folder_path / '.template' / file,
         dst=folder_path / file
