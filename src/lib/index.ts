@@ -1,14 +1,6 @@
 import {
-    Client,
     InstallInputs,
-    State,
     CdnMessageEvent,
-    CdnEvent,
-    CdnLoadingGraphErrorEvent,
-    FetchErrors,
-    getUrlBase,
-    sanitizeModules,
-    getAssetId,
     InstallLoadingGraphInputs,
 } from '@youwol/cdn-client'
 import { loadPyodide } from 'pyodide'
@@ -41,167 +33,64 @@ function isPythonInstallInputs(
     return (body as PythonInstall).modules !== undefined
 }
 
-export async function install(
-    inputs: PythonInstall | PythonLoadingGraph,
-    mockPyodide?: {
-        loadPyodide: () => Promise<{ loadPackage; runPython }>
-    },
-) {
-    const cdnClient = new Client()
-    // There is some trouble when pyodide is loaded from an iFrame programmatically constructed (no origin available)
-    // We provide absolute URL to pyodide by finding the first parent of the current window having an origin defined.
-    const getOrigin = (currentWindow: Window) => {
-        return currentWindow.location.origin == 'null'
-            ? getOrigin(currentWindow.parent)
-            : currentWindow.location.origin
-    }
-
-    const origin = getOrigin(window)
-    const indexURL = `${origin}${getUrlBase('pyodide', '0.21.3')}/full`
-    const nativePackages = {
-        '@pyodide/distutils': 'distutils',
-        '@pyodide/CLAPACK': 'CLAPACK',
-    }
+export async function install(inputs: PythonInstall | PythonLoadingGraph) {
     const onEvent =
         inputs.onEvent ||
         (() => {
             /*no op*/
         })
-
-    const [modules, loadingGraph] = isPythonInstallInputs(inputs)
-        ? [
-              sanitizeModules(inputs.modules || []),
-              await cdnClient.queryLoadingGraph({
-                  modules: inputs.modules,
-              }),
-          ]
-        : [
-              inputs.loadingGraph.lock.map(({ name }) => ({ name })),
-              inputs.loadingGraph,
-          ]
-
-    const libraries = loadingGraph.lock.reduce(
-        (acc, e) => ({ ...acc, ...{ [e.id]: e } }),
-        {},
-    )
-    const librariesByName = loadingGraph.lock.reduce(
-        (acc, e) => ({ ...acc, ...{ [e.name]: e } }),
-        {},
-    )
-
-    const errors = []
-    const packagesSelected = loadingGraph.definition
-        .flat()
-        .map(([assetId, cdn_url]) => {
-            const isNative = Object.keys(nativePackages).find(
-                (name) => getAssetId(name) == assetId,
-            )
-            return {
-                assetId,
-                url: isNative
-                    ? `${getUrlBase('pyodide', '0.21.3')}/full/${
-                          cdn_url.split('/').slice(-1)[0]
-                      }`
-                    : `/api/assets-gateway/raw/package/${cdn_url}`,
-                name: libraries[assetId].name,
-                version: libraries[assetId].version,
-                exportedSymbol: libraries[assetId].exportedSymbol,
-            }
-        })
-        .filter(
-            ({ name, version }) =>
-                !State.isCompatibleVersionInstalled(name, version),
-        )
-
-    await Promise.all(
-        packagesSelected.map(({ name, url }) => {
-            return cdnClient
-                .fetchScript({
-                    name,
-                    url,
-                    onEvent,
-                })
-                .catch((error) => {
-                    errors.push(error)
-                })
-        }),
-    )
-    if (errors.length > 0) {
-        onEvent(new CdnLoadingGraphErrorEvent(new FetchErrors({ errors })))
-        throw new FetchErrors({ errors })
+    if (!isPythonInstallInputs(inputs)) {
+        throw Error('Install from lock file not implemented')
     }
-
-    onEvent(new CdnMessageEvent('loadPyodide', 'Loading Python environment...'))
-    const pyodide = mockPyodide
-        ? await mockPyodide.loadPyodide()
-        : await loadPyodide({
-              indexURL,
-          })
-
+    const modules = inputs.modules
+    const pyodide = await loadPyodide({
+        indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full',
+    })
     if (inputs.exportedPyodideInstanceName) {
         window[inputs.exportedPyodideInstanceName] = pyodide
     }
+    onEvent(
+        new CdnMessageEvent(
+            'loadingDependencies',
+            'Loading Python dependencies...',
+        ),
+    )
+    await pyodide.loadPackage('micropip')
 
-    onEvent(new CdnMessageEvent('loadPyodide', 'Python environment loaded'))
-
-    const packageInstallPromises = packagesSelected.map(({ name, url }) => {
-        url = nativePackages[name] ? nativePackages[name] : `${origin}${url}`
-        return pyodide.loadPackage(url, (message) =>
-            processInstallMessages(message, onEvent),
+    modules.forEach((module) => {
+        onEvent(
+            new CdnMessageEvent(
+                `@pyodide/${module}`,
+                `${module} installing ...`,
+            ),
         )
     })
-    await Promise.all(packageInstallPromises)
-    if (inputs.warmUp) {
-        modules.forEach(({ name }) => {
-            const lib = librariesByName[name]
-            const importName =
-                name == lib.exportedSymbol
-                    ? lib.exportedSymbol.split('pyodide/')[1]
-                    : lib.exportedSymbol
 
-            onEvent(new CdnMessageEvent(name, `${importName} warming up...`))
-            pyodide.runPython(`import ${importName}`)
-            onEvent(new CdnMessageEvent(name, `${importName} loaded & ready`))
-        })
-    }
-    return { pyodide, loadingGraph }
-}
+    await Promise.all(
+        modules.map((module) => {
+            return pyodide
+                .runPythonAsync(
+                    `
+import micropip
+await micropip.install(requirements='${module}')`,
+                )
+                .then(() => {
+                    onEvent(
+                        new CdnMessageEvent(
+                            `@pyodide/${module}`,
+                            `${module} loaded`,
+                        ),
+                    )
+                })
+        }),
+    )
 
-export function processInstallMessages(
-    rawMessage: string,
-    onEvent: (event: CdnEvent) => void,
-): [] {
-    if (
-        rawMessage.startsWith('Loading') &&
-        !rawMessage.includes('/api/assets-gateway')
-    ) {
-        const packages = rawMessage.split('Loading ')[1].split(', ')
-        packages.forEach((library) => {
-            onEvent(
-                new CdnMessageEvent(
-                    `@pyodide/${library}`,
-                    `${library} installing ...`,
-                ),
-            )
-        })
-        return
-    }
-    if (
-        rawMessage.startsWith('Loading') &&
-        rawMessage.includes('/api/assets-gateway')
-    ) {
-        const library = rawMessage.split(' ')[1]
-        onEvent(
-            new CdnMessageEvent(`@pyodide/${library}`, `${library} loading...`),
-        )
-        return
-    }
-    if (rawMessage.startsWith('Loaded')) {
-        const packages = rawMessage.split('Loaded ')[1].split(', ')
-        packages.forEach((library) => {
-            onEvent(
-                new CdnMessageEvent(`@pyodide/${library}`, `${library} loaded`),
-            )
-        })
-    }
+    onEvent(
+        new CdnMessageEvent('loadedDependencies', 'Python dependencies loaded'),
+    )
+
+    const lock = await pyodide.runPythonAsync(
+        'import micropip\nmicropip.freeze()',
+    )
+    return { pyodide, loadingGraph: lock }
 }

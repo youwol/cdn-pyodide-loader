@@ -29,16 +29,15 @@ const exportedSymbols = {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
-const mainEntry : Object = {
+const mainEntry : {entryFile: string,loadDependencies:string[]} = {
     "entryFile": "./index.ts",
     "loadDependencies": [
         "pyodide"
     ]
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
-const secondaryEntries : Object = {}
+const secondaryEntries : {[k:string]:{entryFile: string, name: string, loadDependencies:string[]}}= {}
+
 const entries = {
      '@youwol/cdn-pyodide-loader': './index.ts',
     ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/cdn-pyodide-loader/${e.name}`]:e.entryFile}), {})
@@ -46,7 +45,7 @@ const entries = {
 export const setup = {
     name:'@youwol/cdn-pyodide-loader',
         assetId:'QHlvdXdvbC9jZG4tcHlvZGlkZS1sb2FkZXI=',
-    version:'0.1.2',
+    version:'0.1.3-wip',
     shortDescription:"Packages loader for pyodide from YouWol's CDN.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/cdn-pyodide-loader',
     npmPackage:'https://www.npmjs.com/package/@youwol/cdn-pyodide-loader',
@@ -57,16 +56,20 @@ export const setup = {
     externals,
     exportedSymbols,
     entries,
+    secondaryEntries,
     getDependencySymbolExported: (module:string) => {
         return `${exportedSymbols[module].exportedSymbol}_APIv${exportedSymbols[module].apiKey}`
     },
 
-    installMainModule: ({cdnClient, installParameters}:{cdnClient, installParameters?}) => {
+    installMainModule: ({cdnClient, installParameters}:{
+        cdnClient:{install:(unknown) => Promise<Window>},
+        installParameters?
+    }) => {
         const parameters = installParameters || {}
         const scripts = parameters.scripts || []
         const modules = [
             ...(parameters.modules || []),
-            ...mainEntry['loadDependencies'].map( d => `${d}#${runTimeDependencies.externals[d]}`)
+            ...mainEntry.loadDependencies.map( d => `${d}#${runTimeDependencies.externals[d]}`)
         ]
         return cdnClient.install({
             ...parameters,
@@ -76,20 +79,24 @@ export const setup = {
             return window[`@youwol/cdn-pyodide-loader_APIv01`]
         })
     },
-    installAuxiliaryModule: ({name, cdnClient, installParameters}:{name: string, cdnClient, installParameters?}) => {
+    installAuxiliaryModule: ({name, cdnClient, installParameters}:{
+        name: string,
+        cdnClient:{install:(unknown) => Promise<Window>},
+        installParameters?
+    }) => {
         const entry = secondaryEntries[name]
+        if(!entry){
+            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
+        }
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/cdn-pyodide-loader#0.1.2~dist/@youwol/cdn-pyodide-loader/${entry.name}.js`
+            `@youwol/cdn-pyodide-loader#0.1.3-wip~dist/@youwol/cdn-pyodide-loader/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
             ...entry.loadDependencies.map( d => `${d}#${runTimeDependencies.externals[d]}`)
         ]
-        if(!entry){
-            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
-        }
         return cdnClient.install({
             ...parameters,
             modules,
@@ -97,5 +104,13 @@ export const setup = {
         }).then(() => {
             return window[`@youwol/cdn-pyodide-loader/${entry.name}_APIv01`]
         })
+    },
+    getCdnDependencies(name?: string){
+        if(name && !secondaryEntries[name]){
+            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
+        }
+        const deps = name ? secondaryEntries[name].loadDependencies : mainEntry.loadDependencies
+
+        return deps.map( d => `${d}#${runTimeDependencies.externals[d]}`)
     }
 }
