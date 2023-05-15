@@ -2,7 +2,7 @@
 const runTimeDependencies = {
     "externals": {
         "pyodide": "^0.21.3",
-        "@youwol/cdn-client": "^1.0.9"
+        "@youwol/cdn-client": "^2.0.1"
     },
     "includedInBundle": {}
 }
@@ -15,7 +15,7 @@ const externals = {
     "@youwol/cdn-client": {
         "commonjs": "@youwol/cdn-client",
         "commonjs2": "@youwol/cdn-client",
-        "root": "@youwol/cdn-client_APIv1"
+        "root": "@youwol/cdn-client_APIv2"
     }
 }
 const exportedSymbols = {
@@ -24,7 +24,7 @@ const exportedSymbols = {
         "exportedSymbol": "pyodide"
     },
     "@youwol/cdn-client": {
-        "apiKey": "1",
+        "apiKey": "2",
         "exportedSymbol": "@youwol/cdn-client"
     }
 }
@@ -32,7 +32,8 @@ const exportedSymbols = {
 const mainEntry : {entryFile: string,loadDependencies:string[]} = {
     "entryFile": "./index.ts",
     "loadDependencies": [
-        "pyodide"
+        "pyodide",
+        "@youwol/cdn-client"
     ]
 }
 
