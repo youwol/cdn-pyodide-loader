@@ -42,6 +42,14 @@ export async function install(inputs: PythonInstall | PythonLoadingGraph) {
     if (!isPythonInstallInputs(inputs)) {
         throw Error('Install from lock file not implemented')
     }
+    onEvent(
+        new CdnMessageEvent(
+            `pyodide runtime`,
+            `Installing python runtime`,
+            'Pending',
+        ),
+    )
+
     const modules = inputs.modules
     const pyodide = await loadPyodide({
         indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full',
@@ -51,8 +59,16 @@ export async function install(inputs: PythonInstall | PythonLoadingGraph) {
     }
     onEvent(
         new CdnMessageEvent(
-            'loadingDependencies',
+            `pyodide runtime`,
+            `Python runtime installed`,
+            'Succeeded',
+        ),
+    )
+    onEvent(
+        new CdnMessageEvent(
+            'loadDependencies',
             'Loading Python dependencies...',
+            'Pending',
         ),
     )
     await pyodide.loadPackage('micropip')
@@ -60,8 +76,9 @@ export async function install(inputs: PythonInstall | PythonLoadingGraph) {
     modules.forEach((module) => {
         onEvent(
             new CdnMessageEvent(
-                `@pyodide/${module}`,
+                `${module}`,
                 `${module} installing ...`,
+                'Pending',
             ),
         )
     })
@@ -77,8 +94,9 @@ await micropip.install(requirements='${module}')`,
                 .then(() => {
                     onEvent(
                         new CdnMessageEvent(
-                            `@pyodide/${module}`,
+                            `${module}`,
                             `${module} loaded`,
+                            'Succeeded',
                         ),
                     )
                 })
@@ -86,7 +104,11 @@ await micropip.install(requirements='${module}')`,
     )
 
     onEvent(
-        new CdnMessageEvent('loadedDependencies', 'Python dependencies loaded'),
+        new CdnMessageEvent(
+            'loadDependencies',
+            'Python dependencies loaded',
+            'Succeeded',
+        ),
     )
 
     const lock = await pyodide.runPythonAsync(
