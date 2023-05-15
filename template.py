@@ -35,7 +35,7 @@ template = Template(
     bundles=Bundles(
           mainModule=MainModule(
               entryFile='./index.ts',
-              loadDependencies=["pyodide"]
+              loadDependencies=list(externals.keys())
           )
         ),
     testConfig="https://github.com/youwol/integration-tests-conf",
