@@ -68,7 +68,7 @@
     },
     "dependencies": {
         "pyodide": "^0.21.3",
-        "@youwol/cdn-client": "^1.0.9"
+        "@youwol/cdn-client": "^2.0.1"
     },
     "youwol": {
         "cdnDependencies": {

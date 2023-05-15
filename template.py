@@ -9,6 +9,10 @@ folder_path = Path(__file__).parent
 
 pkg_json = parse_json(folder_path / 'package.json')
 
+externals = {
+    "pyodide": "^0.21.3",
+    "@youwol/cdn-client": "^2.0.1"
+}
 
 template = Template(
     path=folder_path,
@@ -19,10 +23,7 @@ template = Template(
     author=pkg_json['author'],
     dependencies=Dependencies(
         runTime=RunTimeDeps(
-            externals={
-                "pyodide": "^0.21.3",
-                "@youwol/cdn-client": "^1.0.9"
-            }
+            externals=externals
         ),
         devTime={
             "url": "^0.11.0",
