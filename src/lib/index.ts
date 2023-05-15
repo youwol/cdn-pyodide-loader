@@ -55,7 +55,7 @@ export async function install(inputs: PythonInstall | PythonLoadingGraph) {
         indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full',
     })
     if (inputs.exportedPyodideInstanceName) {
-        window[inputs.exportedPyodideInstanceName] = pyodide
+        globalThis[inputs.exportedPyodideInstanceName] = pyodide
     }
     onEvent(
         new CdnMessageEvent(
