@@ -48,7 +48,7 @@ export const setup = {
         assetId:'QHlvdXdvbC9jZG4tcHlvZGlkZS1sb2FkZXI=',
     version:'0.1.3',
     shortDescription:"Packages loader for pyodide from YouWol's CDN.",
-    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/cdn-pyodide-loader',
+    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/cdn-pyodide-loader&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/cdn-pyodide-loader',
     sourceGithub:'https://github.com/youwol/cdn-pyodide-loader',
     userGuide:'https://l.youwol.com/doc/@youwol/cdn-pyodide-loader',
@@ -63,7 +63,7 @@ export const setup = {
     },
 
     installMainModule: ({cdnClient, installParameters}:{
-        cdnClient:{install:(unknown) => Promise<Window>},
+        cdnClient:{install:(unknown) => Promise<WindowOrWorkerGlobalScope>},
         installParameters?
     }) => {
         const parameters = installParameters || {}
@@ -82,7 +82,7 @@ export const setup = {
     },
     installAuxiliaryModule: ({name, cdnClient, installParameters}:{
         name: string,
-        cdnClient:{install:(unknown) => Promise<Window>},
+        cdnClient:{install:(unknown) => Promise<WindowOrWorkerGlobalScope>},
         installParameters?
     }) => {
         const entry = secondaryEntries[name]
