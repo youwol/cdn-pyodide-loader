@@ -15,7 +15,10 @@
         "emitDecoratorMetadata": true,
         "typeRoots": ["node_modules/@types"],
         "lib": ["es5", "es6", "dom", "es2020"],
-        "paths": {}
+        "baseUrl": ".",
+        "paths": {
+            "@rxVDomConfig": ["./rx-vdom-config"]
+        }
     },
     "ts-node": {
         "compilerOptions": {

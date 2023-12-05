@@ -11,7 +11,7 @@ pkg_json = parse_json(folder_path / 'package.json')
 
 externals = {
     "pyodide": "^0.21.3",
-    "@youwol/cdn-client": "^2.0.1"
+    "@youwol/webpm-client": "^3.0.0"
 }
 
 template = Template(
