@@ -1,6 +1,6 @@
 {
-    "name": "@youwol/cdn-pyodide-loader",
-    "description": "Packages loader for pyodide from YouWol's CDN.",
+    "name": "@youwol/webpm-pyodide-loader",
+    "description": "Packages loader for pyodide from webPM.",
     "version": "0.2.0-wip",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/cdn-pyodide-loader#README.md",
