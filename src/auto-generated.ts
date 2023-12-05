@@ -2,7 +2,7 @@
 const runTimeDependencies = {
     "externals": {
         "pyodide": "^0.21.3",
-        "@youwol/cdn-client": "^2.0.1"
+        "@youwol/webpm-client": "^3.0.0"
     },
     "includedInBundle": {}
 }
@@ -12,10 +12,10 @@ const externals = {
         "commonjs2": "pyodide",
         "root": "pyodide_APIv021"
     },
-    "@youwol/cdn-client": {
-        "commonjs": "@youwol/cdn-client",
-        "commonjs2": "@youwol/cdn-client",
-        "root": "@youwol/cdn-client_APIv2"
+    "@youwol/webpm-client": {
+        "commonjs": "@youwol/webpm-client",
+        "commonjs2": "@youwol/webpm-client",
+        "root": "@youwol/webpm-client_APIv3"
     }
 }
 const exportedSymbols = {
@@ -23,9 +23,9 @@ const exportedSymbols = {
         "apiKey": "021",
         "exportedSymbol": "pyodide"
     },
-    "@youwol/cdn-client": {
-        "apiKey": "2",
-        "exportedSymbol": "@youwol/cdn-client"
+    "@youwol/webpm-client": {
+        "apiKey": "3",
+        "exportedSymbol": "@youwol/webpm-client"
     }
 }
 
@@ -33,7 +33,7 @@ const mainEntry : {entryFile: string,loadDependencies:string[]} = {
     "entryFile": "./index.ts",
     "loadDependencies": [
         "pyodide",
-        "@youwol/cdn-client"
+        "@youwol/webpm-client"
     ]
 }
 
@@ -47,7 +47,7 @@ export const setup = {
     name:'@youwol/webpm-pyodide-loader',
         assetId:'QHlvdXdvbC93ZWJwbS1weW9kaWRlLWxvYWRlcg==',
     version:'0.2.0-wip',
-    shortDescription:"Packages loader for pyodide from YouWol's CDN.",
+    shortDescription:"Packages loader for pyodide from webPM.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/webpm-pyodide-loader&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/webpm-pyodide-loader',
     sourceGithub:'https://github.com/youwol/webpm-pyodide-loader',
