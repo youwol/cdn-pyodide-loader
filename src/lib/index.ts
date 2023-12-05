@@ -2,7 +2,7 @@ import {
     InstallInputs,
     CdnMessageEvent,
     InstallLoadingGraphInputs,
-} from '@youwol/cdn-client'
+} from '@youwol/webpm-client'
 import { loadPyodide } from 'pyodide'
 
 export interface InstallOptions {
