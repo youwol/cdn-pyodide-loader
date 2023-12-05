@@ -1,7 +1,7 @@
 {
     "name": "@youwol/webpm-pyodide-loader",
     "description": "Packages loader for pyodide from webPM.",
-    "version": "0.2.0",
+    "version": "0.2.1-wip",
     "author": "greinisch@youwol.com",
     "homepage": "https://github.com/youwol/webpm-pyodide-loader#README.md",
     "main": "dist/@youwol/webpm-pyodide-loader.js",

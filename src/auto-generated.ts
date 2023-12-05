@@ -46,7 +46,7 @@ const entries = {
 export const setup = {
     name:'@youwol/webpm-pyodide-loader',
         assetId:'QHlvdXdvbC93ZWJwbS1weW9kaWRlLWxvYWRlcg==',
-    version:'0.2.0',
+    version:'0.2.1-wip',
     shortDescription:"Packages loader for pyodide from webPM.",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/webpm-pyodide-loader&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/webpm-pyodide-loader',
@@ -92,7 +92,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/webpm-pyodide-loader#0.2.0~dist/@youwol/webpm-pyodide-loader/${entry.name}.js`
+            `@youwol/webpm-pyodide-loader#0.2.1-wip~dist/@youwol/webpm-pyodide-loader/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
