@@ -1,4 +1,4 @@
-# @youwol/cdn-pyodide-loader
+# @youwol/webpm-pyodide-loader
 
 Packages loader for pyodide from YouWol's CDN.
 
@@ -7,13 +7,13 @@ This library is part of the hybrid cloud/local ecosystem
 
 ## Links
 
-[Online user-guide](https://l.youwol.com/doc/@youwol/cdn-pyodide-loader)
+[Online user-guide](https://l.youwol.com/doc/@youwol/webpm-pyodide-loader)
 
-[Developers documentation](https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/cdn-pyodide-loader&tab=doc)
+[Developers documentation](https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/webpm-pyodide-loader&tab=doc)
 
-[Package on npm](https://www.npmjs.com/package/@youwol/cdn-pyodide-loader)
+[Package on npm](https://www.npmjs.com/package/@youwol/webpm-pyodide-loader)
 
-[Source on GitHub](https://github.com/youwol/cdn-pyodide-loader)
+[Source on GitHub](https://github.com/youwol/webpm-pyodide-loader)
 
 # Installation, Build, Test
 
