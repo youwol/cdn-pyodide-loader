@@ -2,7 +2,7 @@
 const runTimeDependencies = {
     "externals": {
         "pyodide": "^0.21.3",
-        "@youwol/cdn-client": "^2.0.1"
+        "@youwol/webpm-client": "^3.0.0"
     },
     "includedInBundle": {}
 }
@@ -12,10 +12,10 @@ const externals = {
         "commonjs2": "pyodide",
         "root": "pyodide_APIv021"
     },
-    "@youwol/cdn-client": {
-        "commonjs": "@youwol/cdn-client",
-        "commonjs2": "@youwol/cdn-client",
-        "root": "@youwol/cdn-client_APIv2"
+    "@youwol/webpm-client": {
+        "commonjs": "@youwol/webpm-client",
+        "commonjs2": "@youwol/webpm-client",
+        "root": "@youwol/webpm-client_APIv3"
     }
 }
 const exportedSymbols = {
@@ -23,9 +23,9 @@ const exportedSymbols = {
         "apiKey": "021",
         "exportedSymbol": "pyodide"
     },
-    "@youwol/cdn-client": {
-        "apiKey": "2",
-        "exportedSymbol": "@youwol/cdn-client"
+    "@youwol/webpm-client": {
+        "apiKey": "3",
+        "exportedSymbol": "@youwol/webpm-client"
     }
 }
 
@@ -33,26 +33,26 @@ const mainEntry : {entryFile: string,loadDependencies:string[]} = {
     "entryFile": "./index.ts",
     "loadDependencies": [
         "pyodide",
-        "@youwol/cdn-client"
+        "@youwol/webpm-client"
     ]
 }
 
 const secondaryEntries : {[k:string]:{entryFile: string, name: string, loadDependencies:string[]}}= {}
 
 const entries = {
-     '@youwol/cdn-pyodide-loader': './index.ts',
-    ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/cdn-pyodide-loader/${e.name}`]:e.entryFile}), {})
+     '@youwol/webpm-pyodide-loader': './index.ts',
+    ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/webpm-pyodide-loader/${e.name}`]:e.entryFile}), {})
 }
 export const setup = {
-    name:'@youwol/cdn-pyodide-loader',
-        assetId:'QHlvdXdvbC9jZG4tcHlvZGlkZS1sb2FkZXI=',
-    version:'0.1.3',
-    shortDescription:"Packages loader for pyodide from YouWol's CDN.",
-    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/cdn-pyodide-loader&tab=doc',
-    npmPackage:'https://www.npmjs.com/package/@youwol/cdn-pyodide-loader',
-    sourceGithub:'https://github.com/youwol/cdn-pyodide-loader',
-    userGuide:'https://l.youwol.com/doc/@youwol/cdn-pyodide-loader',
-    apiVersion:'01',
+    name:'@youwol/webpm-pyodide-loader',
+        assetId:'QHlvdXdvbC93ZWJwbS1weW9kaWRlLWxvYWRlcg==',
+    version:'0.2.1-wip',
+    shortDescription:"Packages loader for pyodide from webPM.",
+    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/webpm-pyodide-loader&tab=doc',
+    npmPackage:'https://www.npmjs.com/package/@youwol/webpm-pyodide-loader',
+    sourceGithub:'https://github.com/youwol/webpm-pyodide-loader',
+    userGuide:'https://l.youwol.com/doc/@youwol/webpm-pyodide-loader',
+    apiVersion:'02',
     runTimeDependencies,
     externals,
     exportedSymbols,
@@ -77,7 +77,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/cdn-pyodide-loader_APIv01`]
+            return window[`@youwol/webpm-pyodide-loader_APIv02`]
         })
     },
     installAuxiliaryModule: ({name, cdnClient, installParameters}:{
@@ -92,7 +92,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/cdn-pyodide-loader#0.1.3~dist/@youwol/cdn-pyodide-loader/${entry.name}.js`
+            `@youwol/webpm-pyodide-loader#0.2.1-wip~dist/@youwol/webpm-pyodide-loader/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
@@ -103,7 +103,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/cdn-pyodide-loader/${entry.name}_APIv01`]
+            return window[`@youwol/webpm-pyodide-loader/${entry.name}_APIv02`]
         })
     },
     getCdnDependencies(name?: string){

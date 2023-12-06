@@ -11,7 +11,7 @@ pkg_json = parse_json(folder_path / 'package.json')
 
 externals = {
     "pyodide": "^0.21.3",
-    "@youwol/cdn-client": "^2.0.1"
+    "@youwol/webpm-client": "^3.0.0"
 }
 
 template = Template(
@@ -27,9 +27,7 @@ template = Template(
         ),
         devTime={
             "url": "^0.11.0",
-            "crypto-browserify": "^3.12.0",
-            "@youwol/http-clients": "^2.0.0",
-            "@youwol/http-primitives": "^0.1.2"
+            "crypto-browserify": "^3.12.0"
         }
     ),
     bundles=Bundles(
